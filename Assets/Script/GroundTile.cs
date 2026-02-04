@@ -135,7 +135,27 @@ void CreateObstacle(float xPos)
     obs.transform.localPosition = pos;
 }
 
-void SpawnSpikeTrap(int tileIndex)
+
+void SpawnSpikeTrap(int tileIndex) // === spikebar muncul X absolut
+{
+    // Jangan muncul di awal game
+    if (tileIndex < 5) return;
+
+    // 10% chance muncul
+    if (Random.value > 0.1f) return;
+
+    // Random lane X
+    //float laneX = Random.Range(0f, 10f); // sesuai lebar tile kamu
+
+    Vector3 spawnPos = spikeSpawnPoint.position;
+    spawnPos.x = transform.position.x+2;
+
+    Instantiate(spikeTrapPrefab, spawnPos, Quaternion.identity, transform);
+}
+
+
+/*
+void SpawnSpikeTrap(int tileIndex) // === spikebar muncul X acak
 {
     // Jangan muncul di awal game
     if (tileIndex < 5) return;
@@ -151,7 +171,7 @@ void SpawnSpikeTrap(int tileIndex)
 
     Instantiate(spikeTrapPrefab, spawnPos, Quaternion.identity, transform);
 }
-
+*/
 
 
 

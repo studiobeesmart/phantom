@@ -7,7 +7,7 @@ public class CoinSpawner : MonoBehaviour
 
     public float laneOffset = 2f;
     public float spawnZDistance = 25f;
-    public float spawnInterval = 2f;
+    public float spawnInterval = 3f;
     public float coinHeight = 1.8f;
 
     [Range(0,100)]

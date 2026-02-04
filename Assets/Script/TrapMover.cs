@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class TrapMover : MonoBehaviour
 {
-    public float tinggiGerak = 4f;     // seberapa jauh naik
+    public float tinggiGerak = 3.5f;     // seberapa jauh naik
     public float kecepatan = 80f;     // lambat = berat
     public float delayAtas = 4f;     // jeda saat sampai atas
     public float delayBawah = 5f;    // jeda saat sampai bawah
