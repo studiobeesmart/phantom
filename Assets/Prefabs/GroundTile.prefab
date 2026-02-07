@@ -3838,7 +3838,10 @@ MonoBehaviour:
   wallPatung: {fileID: 6278598597755887814}
   spikeTrapPrefab: {fileID: 1223016426241444352, guid: 26444bf1bc5866a43940079f54316e30, type: 3}
   spikeSpawnPoint: {fileID: 6799050167747465003}
-  obstaclePrefab: {fileID: 5843621507956916649, guid: d415b90c1b2b220409b2cb4cd51e9269, type: 3}
+  spikeGapTile: 3
+  obstaclePrefab: {fileID: 1487473884119082614, guid: e25a37264a387cf4f98e945f2fb5378f, type: 3}
+  minGap: 3
+  maxGap: 6
 --- !u!65 &1225517029595751352
 BoxCollider:
   m_ObjectHideFlags: 0

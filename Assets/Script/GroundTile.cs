@@ -30,6 +30,17 @@ public class GroundTile : MonoBehaviour
     public GameObject spikeTrapPrefab;
     public Transform spikeSpawnPoint;
 
+    static int lastSpikeTileIndex = -999;
+    public int spikeGapTile = 3; // minimal jarak 3 tile
+
+   // static int lastObstacleTile = -5;
+
+   
+    public static int lastObstacleTile = -3;
+    public static int nextSpikeTile = 12;
+
+    public int obstacleGap = 2;
+
 
     public void SetTileIndex(int index)
     {
@@ -68,20 +79,70 @@ public class GroundTile : MonoBehaviour
         if (pillarLeft) pillarLeft.SetActive(state);
         if (pillarRight) pillarRight.SetActive(state);
     }
+
+
+
     // Start is called before the first frame update
     private void Start()
     {
         groundSpawner = GameObject.FindObjectOfType<GroundSpawner>();
         //Debug.Log("START JALAN Ground TILE");
 
-        if(tileIndexDiterima>9)
-        SpawnObstacle();
+       if (tileIndexDiterima > 9 &&
+            tileIndexDiterima > lastObstacleTile + obstacleGap &&
+            Random.value < 1.9f)
+        {
+            SpawnObstacleRow();
+            lastObstacleTile = tileIndexDiterima;
+        }
+
 
        
     SpawnSpikeTrap(tileIndexDiterima); // kirim index tile
 
 
     }
+
+    void SpawnObstacleRow()
+        {
+            int[] lanes = { 0, 1, 2 };
+
+            // acak urutan lane
+            for (int i = 0; i < lanes.Length; i++)
+            {
+                int rnd = Random.Range(i, lanes.Length);
+                int temp = lanes[i];
+                lanes[i] = lanes[rnd];
+                lanes[rnd] = temp;
+            }
+
+            // spawn hanya 2 lane
+            for (int i = 0; i < 2; i++)
+            {
+                SpawnObstacleAtLane(lanes[i]);
+            }
+        }
+    void SpawnObstacleAtLane(int lane)
+    {
+        float xPos;
+
+        if (lane == 0)
+            xPos = Random.Range(leftMin, leftMax);
+        else if (lane == 1)
+            xPos = Random.Range(midMin, midMax);
+        else
+            xPos = Random.Range(rightMin, rightMax);
+
+        Vector3 pos = new Vector3(
+            xPos,
+            obstacleSpawnMiddle.localPosition.y,
+            obstacleSpawnMiddle.localPosition.z
+        );
+
+        GameObject obs = Instantiate(obstaclePrefab, transform);
+        obs.transform.localPosition = pos;
+    }
+
 
     private void OnTriggerExit (Collider other)
     {
@@ -109,7 +170,7 @@ public class GroundTile : MonoBehaviour
         Instantiate(obstaclePrefab,spawnPoint.position,Quaternion.identity,transform);
 
     }
-*/
+
 
 void SpawnObstacle()
 {
@@ -122,36 +183,78 @@ void SpawnObstacle()
     if(Random.value > 0.4f)
         CreateObstacle(Random.Range(rightMin, rightMax));
 }
+*/
+
+void SpawnObstacle()
+{
+    int count = Random.Range(1, 3); // 1 atau 2 obstacle
+    int[] lanes = { 0, 1, 2 };
+
+    // shuffle
+    for (int i = 0; i < lanes.Length; i++)
+    {
+        int rnd = Random.Range(i, lanes.Length);
+        (lanes[i], lanes[rnd]) = (lanes[rnd], lanes[i]);
+    }
+
+    for (int i = 0; i < count; i++)
+        SpawnLane(lanes[i]);
+}
+
+void SpawnLane(int lane)
+{
+    if (lane == 0)
+        CreateObstacle(Random.Range(leftMin, leftMax));
+    else if (lane == 1)
+        CreateObstacle(Random.Range(midMin, midMax));
+    else
+        CreateObstacle(Random.Range(rightMin, rightMax));
+}
+
+
 
 void CreateObstacle(float xPos)
 {
+    /*
     Vector3 pos = new Vector3(
         xPos,
         obstacleSpawnMiddle.localPosition.y,
         obstacleSpawnMiddle.localPosition.z
     );
+    */
+
+    Vector3 pos = new Vector3(
+    xPos,
+    obstacleSpawnMiddle.localPosition.y + 1.2f,  //  tambahkan offset Y
+    obstacleSpawnMiddle.localPosition.z
+);
 
     GameObject obs = Instantiate(obstaclePrefab, transform);
     obs.transform.localPosition = pos;
 }
 
+//static int nextSpikeTile = 12; // tile pertama spike
+public int minGap = 3;
+public int maxGap = 6;
 
-void SpawnSpikeTrap(int tileIndex) // === spikebar muncul X absolut
+
+void SpawnSpikeTrap(int tileIndex)
 {
-    // Jangan muncul di awal game
     if (tileIndex < 5) return;
 
-    // 10% chance muncul
-    if (Random.value > 0.1f) return;
+    // belum waktunya spawn spike
+    if (tileIndex < nextSpikeTile) return;
 
-    // Random lane X
-    //float laneX = Random.Range(0f, 10f); // sesuai lebar tile kamu
-
+    // spawn spike
     Vector3 spawnPos = spikeSpawnPoint.position;
-    spawnPos.x = transform.position.x+2;
+    spawnPos.x = transform.position.x + 2;
 
     Instantiate(spikeTrapPrefab, spawnPos, Quaternion.identity, transform);
+
+    // tentukan tile spike berikutnya
+    nextSpikeTile = tileIndex + Random.Range(minGap, maxGap + 1);
 }
+
 
 
 /*

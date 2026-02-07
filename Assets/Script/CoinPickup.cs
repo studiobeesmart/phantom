@@ -8,41 +8,45 @@ public class CoinPickup : MonoBehaviour
     public AudioClip goodCoinSound;
     public AudioClip badCoinSound;
 
-    public GameObject badCoinEffect;
+    private bool sudahDiambil = false;
 
     void OnTriggerEnter(Collider other)
     {
+        if (sudahDiambil) return;
         if (!other.CompareTag("Player")) return;
+
+        sudahDiambil = true;
+        GetComponent<Collider>().enabled = false;
 
         if (isBadCoin)
         {
             Debug.Log("Kena koin busuk");
             PlaySound(badCoinSound);
-
-            if (badCoinEffect != null)
-                Instantiate(badCoinEffect, transform.position, Quaternion.identity);
+            ScoreManager.instance.AddCursedCoin(1);
         }
         else
         {
-            Debug.Log("Dapat koin " + value);
+            Debug.Log("Dapat koin");
             PlaySound(goodCoinSound);
-
-            if (ScoreManager.instance != null)
-                ScoreManager.instance.AddScore(value);
+            ScoreManager.instance.AddScore(value);
+            
         }
 
         Destroy(gameObject);
     }
 
     void PlaySound(AudioClip clip)
-    {
-        if (clip == null) return;
+{
+    if (clip == null) return;
 
-        GameObject temp = new GameObject("CoinSound");
-        AudioSource a = temp.AddComponent<AudioSource>();
-        a.clip = clip;
-        a.spatialBlend = 0f;
-        a.Play();
-        Destroy(temp, clip.length);
-    }
+    GameObject temp = new GameObject("CoinSound");
+    AudioSource a = temp.AddComponent<AudioSource>();
+    a.clip = clip;
+    a.volume = 1f;
+    a.spatialBlend = 0f; // 2D
+    a.Play();
+
+    Destroy(temp, clip.length);
+}
+
 }

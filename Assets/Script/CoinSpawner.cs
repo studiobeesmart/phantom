@@ -7,7 +7,7 @@ public class CoinSpawner : MonoBehaviour
 
     public float laneOffset = 2f;
     public float spawnZDistance = 25f;
-    public float spawnInterval = 3f;
+    public float spawnInterval = 6f;
     public float coinHeight = 1.8f;
 
     [Range(0,100)]
@@ -37,7 +37,7 @@ public class CoinSpawner : MonoBehaviour
 
     for (int i = 0; i < amount; i++)
     {
-        Vector3 pos = startPos + new Vector3(0, 0, i * 1.5f);
+        Vector3 pos = startPos + new Vector3(0, 0, i * 4f);
 
         bool spawnBad = Random.Range(0, 100) < badCoinChance;
 

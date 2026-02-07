@@ -86,9 +86,16 @@ isGrounded = Physics.Raycast(
 
 
     anim.SetBool("isGrounded", isGrounded);
+      bool inAir = 
+        anim.GetBool("isJumping") ||
+        anim.GetBool("isFalling") ||
+        anim.GetBool("isLanding");
+
+       bool pressUp = Input.GetKeyDown(KeyCode.UpArrow);
+       bool pressDown = Input.GetKeyDown(KeyCode.DownArrow);
 
     // SLIDE
-    if (Input.GetKeyDown(KeyCode.DownArrow) && isGrounded && !isSliding)
+    if (pressDown && !pressUp && isGrounded && !isSliding && !inAir)
     {
         StartSlide();
     }
@@ -101,8 +108,9 @@ isGrounded = Physics.Raycast(
             StopSlide();
     }
 
+  
     // LOMPAT
-    if (Input.GetKeyDown(KeyCode.UpArrow) && isGrounded)
+    if (pressUp && isGrounded && rb.velocity.y <= 0 && !pressDown)
     {
         rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);
 
@@ -112,10 +120,11 @@ isGrounded = Physics.Raycast(
     }
 
         // SAAT TURUN
-        if (!isGrounded && rb.velocity.y < 0)
+        if (!isGrounded && rb.velocity.y <= 0)
         {
             anim.SetBool("isFalling", true);
             anim.SetBool("isJumping", false);
+            //anim.SetBool("isSliding", false);
         }
 
         // MOMEN MENDARAT
@@ -124,6 +133,7 @@ isGrounded = Physics.Raycast(
             anim.SetBool("isLanding", true);
             anim.SetBool("isFalling", false);
             anim.SetBool("isJumping", false);
+           // anim.SetBool("isSliding", false);
         }
 
         // RESET LANDING
@@ -141,4 +151,29 @@ isGrounded = Physics.Raycast(
 
         rb.velocity = new Vector3(move.x, rb.velocity.y, move.z);
     }
+
+public void Die()
+{
+    Debug.Log("Player mati karena kutukan");
+
+    // Matikan kontrol gerak
+    this.enabled = false;
+
+    // Hentikan physics biar tidak jatuh
+    Rigidbody rb = GetComponent<Rigidbody>();
+    if (rb != null)
+    {
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        rb.isKinematic = true;
+    }
+
+    // Trigger animasi mati
+    Animator anim = GetComponentInChildren<Animator>();
+    if (anim != null)
+    {
+        anim.SetBool("isDie", true);  //  PENTING
+    }
+}
+
 }

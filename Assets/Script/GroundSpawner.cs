@@ -47,5 +47,12 @@ public class GroundSpawner : MonoBehaviour
 
     }
 
+    void Awake()
+    {
+        GroundTile.lastObstacleTile = -3;
+        GroundTile.nextSpikeTile = 12;
+    }
+
+
    
 }

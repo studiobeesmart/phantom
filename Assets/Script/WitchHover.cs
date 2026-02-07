@@ -17,29 +17,75 @@ public class WitchHover : MonoBehaviour
     public float maxForward = -2.5f;  // BATAS PALING MAJU (jangan lebih dekat dari ini)
     public float maxBack = -6f;       // biar nggak terlalu jauh juga
 
+    [Header("Fade Out Simple")]
+    public float fadeSpeed = 1.2f;
+    public float normalSpeed = 2f;
+    public float slowSpeed = 0.6f;
+    public float fadeStart = 2f;
+   
+    [Header("Fade Smooth")]
+public float fadeDuration = 6f; // makin besar makin halus
+float fadeTimer = 0f;
+
+
+    float timer;
+    bool fading;
+    Material mat;
+    Color color;
+
+
     float randomOffset;
 
     void Start()
     {
         basePos = transform.localPosition;
         randomOffset = Random.Range(0f, 100f);
+
+        mat = GetComponentInChildren<Renderer>().material;
+        color = mat.color;
+
     }
 
     void LateUpdate()
     {
+            timer += Time.deltaTime;
+        if (timer > fadeStart) fading = true;
+
         float side = Mathf.PerlinNoise(Time.time * sideSpeed, randomOffset) * 2f - 1f;
         float up = Mathf.Sin(Time.time * floatSpeed) * floatHeight;
 
         Vector3 target = basePos + new Vector3(side * sideRange, up, 0);
-
-        // Batasi Z supaya tidak maju ke depan player
         target.z = Mathf.Clamp(target.z, maxBack, maxForward);
 
-        transform.localPosition = Vector3.Lerp(transform.localPosition, target, Time.deltaTime * 2f);
+        // kalau fade, gerak diperlambat biar terlihat tertinggal
+        float speed = fading ? slowSpeed : normalSpeed;
+        transform.localPosition = Vector3.Lerp(transform.localPosition, target, Time.deltaTime * speed);
 
-        // miring saat bergerak
+        // rotasi miring tetap
         float tilt = side * 15f;
         transform.localRotation = Quaternion.Euler(0, 0, -tilt);
+
+        // fade
+        if (fading)
+        {
+            fadeTimer += Time.deltaTime;
+
+            float t = fadeTimer / fadeDuration;
+
+            FindObjectOfType<WitchSmoke>().StopSmoke();
+
+            // bikin turunnya pelan di awal, cepat di akhir
+            t = Mathf.SmoothStep(0f, 1f, t);
+
+            color.a = Mathf.Lerp(1f, 0f, t);
+            mat.color = color;
+
+            if (t >= 1f)
+                gameObject.SetActive(false);
+        }
+
+
+
     }
 }
 

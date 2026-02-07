@@ -31,4 +31,17 @@ public class PlayerCollision : MonoBehaviour
         yield return new WaitForSecondsRealtime(2f);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
+
+    public void KillByCurse()
+    {
+        if (isDead) return;
+
+        isDead = true;
+        movement.enabled = false;
+        anim.SetBool("isDie", true);
+        StartCoroutine(RestartAfterDelay());
+    }
+
+
+
 }
